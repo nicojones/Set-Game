@@ -1,0 +1,238 @@
+.btn-huge{
+    padding-top:20px;
+    padding-bottom:20px;
+    font-size: 20px;
+}
+.btn-green {
+    border-color: #00aa00 !important;
+    background-color: #61c74f !important;
+    color: white;
+}
+.btn-green:hover {
+    color: white !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.card {
+    width: 120px;
+    height: calc(120px * 1.61828);
+    display: block;
+    position: relative;
+    border: 2px solid #444 !important;
+    float: left;
+    background-color: #fafafa;
+    margin: 20px 20px 0;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.card:hover {
+    -webkit-box-shadow: 0 0 4px #666;
+    -moz-box-shadow: 0 0 4px #666;
+    box-shadow: 0 0 4px #666;
+}
+
+.card.selected {
+    -webkit-box-shadow: 0 0 8px 4px #666;
+    -moz-box-shadow: 0 0 8px 4px #666;
+    box-shadow: 0 0 8px 4px #666;
+}
+
+.card .card-object, .card .card-object:after {
+    height: 45px;
+    width: 45px;
+    display: block;
+    float: left;
+    position: relative;
+    margin: 10px 10px 10px -4px;
+
+    border-style:solid;
+    border-width: 3px;
+}
+
+.card-colour-0 .card-object{
+    border-color: #ff5c41;
+    background-color: #ffa69a;
+}
+.card-colour-1 .card-object{
+    border-color: #45bc34;
+    background-color: #acff9f;
+}
+.card-colour-2 .card-object{
+    border-color: #4a5dff;
+    background-color: #bec1ff;
+}
+
+.card.card-colour-0.card-filling-2 .card-object {
+    background-color: #ff5c41;
+}
+.card.card-colour-1.card-filling-2 .card-object {
+    background-color: #45bc34;
+}
+.card.card-colour-2.card-filling-2 .card-object {
+    background-color: #4a5dff;
+}
+
+
+.card-shape-0 .card-object{
+    border-radius: 100%;
+}
+.card-shape-1 .card-object{
+    border-radius: 20%;
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+.card-shape-2 .card-object{
+    /*TRIANGLE*/
+    /*display: inline-block;*/
+    /*margin: 0 5px;*/
+    /*vertical-align: middle;*/
+    /*width: 60px;*/
+    /*height: 30px;*/
+    /*border-top: solid 30px rgb(200,30,50);*/
+    /*border-left: solid 30px transparent;*/
+    /*border-right: solid 30px transparent;*/
+
+}
+
+.card-filling-0 .card-object{
+    background-color: transparent !important;
+}
+.card-filling-1 .card-object{
+
+}
+.card-filling-2 .card-object{
+
+}
+
+.card-object {
+    position: absolute !important;
+}
+.top-object {
+    top: 5px;
+}
+.center-object {
+    top: 64px;
+}
+.bottom-object {
+    top: 122px;
+}
+.card-amount-2 .top-object {
+    top: 25px;
+}
+.card-amount-2 .bottom-object {
+    top: 110px;
+}
+
+/* PILE OF CARDS */
+.card.pile {
+    padding: 1em;
+}
+.card .hint {
+    position: absolute;
+    bottom: -10px;
+    right: 15px;
+    font-size: 30px;
+}
+.card .small.hint {
+    right: 3px;
+    font-size: 15px;
+}
+
+.card .shortcut {
+    left: 15px;
+    position: absolute;
+    top: 10px;
+}
+
+/*.sets {*/
+    /*-webkit-transform: scale(0.4);*/
+    /*-moz-transform: scale(0.4);*/
+    /*-ms-transform: scale(0.4);*/
+    /*-o-transform: scale(0.4);*/
+    /*transform: scale(0.4);*/
+/*}*/
+
+/* CONSTRUCTED SETS */
+.card.small {
+    width: 50px;
+    height: calc(50px * 1.61828);
+    margin: 8px 8px 0;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+.card.small .card-object {
+    height: 20px;
+    width: 20px;
+    margin: 4px 4px 4px -34px;
+}
+.sets .card.small .top-object {
+    top: -1px;
+}
+.sets .card.small .center-object {
+    top: 30%;
+}
+.sets .card.small .bottom-object {
+    top: 61%;
+}
+
+#game-info {
+    z-index: 71;
+    position: absolute;
+    left: 55px;
+    top: 55px;
+}
+
+.player {
+    position: fixed;
+    bottom: 0;
+    height: 40px;
+    width: 40px;
+    border: 2px solid #555;
+    color: whitesmoke;
+    font-size: 30px;
+    text-align: center;
+}
+.player.active {
+    height: 100px;
+    width: 60px;
+    font-size: 40px;
+    display: table-cell;
+    vertical-align: middle;
+}
+#player-off {
+    background-color: grey;
+    left: 50%;
+    margin-left: -20px;
+}
+#player-one {
+    background-color: turquoise;
+    left: 100px;
+}
+#player-two {
+    background-color: #ff3061;
+    right: 100px;
+}
+
+.modal {
+    display: inline-block;
+    overflow: auto !important;
+}

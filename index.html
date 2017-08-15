@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html ng-app="setgame">
+<head>
+    <title>Set Game</title>
+    <link rel="stylesheet" type="text/css" href="css/lumen.css"/>
+    <link rel="stylesheet" type="text/css" href="css/custom.css"/>
+</head>
+<body ng-controller="SetGameController" ng-init="restartGame(0)"
+      ng-class="timerState == 1 ? 'timer-running' : (timerState == 0 ? 'timer-stopped' : 'timer-paused')">
+    <base href="set-game">
+    <label class="game row" ng-cloak for="hiddenInput">
+        <div class="col-lg-8 col-xs-12" ng-cloak>
+            <div class="row">
+                <div ng-repeat="c in cards" class="col-sm-3 col-lg-3"
+                        ng-attr-class="card card-number-{{::c.card[0]}} card-colour-{{::c.card[1]}}
+                         card-shape-{{::c.card[2]}} card-filling-{{c.card[3]}} {{c.selected ? 'selected' : ''}}"
+                        ng-click="selectCard(c)" ng-show="c.used == 0">
+                    <ul ng-attr-class="card-object-box card-amount-{{c.card[0]+1}}" style="list-style-type: none">
+                        <li ng-if="c.card[0] != 1" class="card-object center-object"></li>
+                        <li ng-if="c.card[0] > 0" class="card-object top-object"></li>
+                        <li ng-if="c.card[0] > 0" class="card-object bottom-object"></li>
+                    </ul>
+                    <span class="hint" ng-show="c.hint">*</span>
+                    <span class="shortcut" ng-show="showShortcuts" ng-bind="shortcuts[$index]"></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-xs-12">
+            <div class="row" ng-cloak id="deck">
+                <div class="col-xs-12">
+                    <span class="card" style="visibility: hidden;"></span>
+                    <span ng-repeat="c in pile" class="card pile"
+                         ng-attr-style="left:{{$index/3 + 15}}px;top:{{$index/3}}px;position:absolute;z-index:{{70-$index}}">
+                    </span>
+                    <span id="game-info" ng-show="gameOn">
+                        {{pile.length}} card{{pile.length != 1 ? 's' : ''}} left <br/><br/>
+                         {{timeElapsed}}<br/><br/>
+                         {{sets.length}} set{{sets.length != 1 ? 's' : ''}}
+                        <br>
+                        <br>
+                        <span style="cursor:pointer"
+                                title="click to hide"
+                                ng-if="twoPlayers"
+                                ng-show="showScores">
+                            <span ng-bind="'Player 1: ' + playerPoints[0]"></span>
+                            <br>
+                            <span ng-bind="'Player 2: ' + playerPoints[1]"></span>
+                        </span>
+                    </span>
+                    <span id="game-stats" ng-if="!gameOn">
+                        <h1>Yeah!</h1>
+                        <h2 ng-bind="'Total time: ' + gameStats.totalTime"></h2>
+                        <small ng-bind="'time added by hints: ' + gameStats.totalHintTime + 's'"></small>
+                        <ul style="list-style-type:none;" ng-show="twoPlayers">
+                            <li ng-bind="'Player 1: ' + playerPoints[0]"></li>
+                            <li ng-bind="'Player 2: ' + playerPoints[1]"></li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+            <div class="row">
+                <br>
+                <br>
+                <br>
+                <br>
+                <div class="col-xs-12">
+                    <small>use keys 1,2,3 to get hints (+10s, +20s, +30s)</small>
+                    <br>
+                    <button class="btn btn-default"
+                           ng-click="hint()">hint (+20)</button>
+                    <br>
+                    <br>
+                    <button class="btn btn-info" ng-show="sets.length"
+                            ng-click="showSets = !showSets"
+                            ng-init="showSets = false">show sets</button>
+                    <!--<br>-->
+                    <!--<br>-->
+                    <!--<button class="btn btn-green btn-lg center-block"-->
+                           <!--ng-click="addCard()">extra card</button>-->
+                    <label ng-hide="sets.length">
+                        <input type="checkbox" value="1" name="two-players"
+                               ng-model="twoPlayers"
+                               ng-click="restartGame(1)">
+                        two players
+                    </label>
+                    <br ng-show="twoPlayers">
+                    <label ng-show="twoPlayers">
+                        <input type="checkbox" value="1" name="showScores"
+                               ng-model="showScores">
+                        live scores
+                    </label>
+                    <br>
+                    <label>
+                        <input type="checkbox" value="1" name="shortcuts"
+                               ng-model="showShortcuts"
+                               ng-click="$scope.showShortcuts = !$scope.showShortcuts">
+                        keyboard shortcuts
+                    </label>
+                    <br>
+                    <br>
+                    <button class="btn btn-warning btn-sm"
+                            ng-click="restartGameClick = 1"
+                            ng-init="restartGameClick=0"
+                            ng-show="restartGameClick==0">restart</button>
+                    <button class="btn btn-warning btn-sm"
+                            ng-show="restartGameClick==1"
+                            ng-click="(restartGameClick=0)||restartGame(1)">sure?</button>
+                    <h3>{{alert}}</h3>
+                    <small style="color:red" ng-show="hintTimeCurrent > 0" ng-bind="'+' + hintTimeCurrent + 's'"></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" ng-show="twoPlayers">
+            <div id="player-one" ng-class="{active: activePlayer == 1, player: 1}">Z</div>
+            <div id="player-off" class="player" ng-click="activePlayer = 0">
+                <span ng-show="playerTimeout > 0" ng-bind="playerTimeout"></span>
+            </div>
+            <div id="player-two" ng-class="{active: activePlayer == 2, player: 1}">M</div>
+        </div>
+
+
+    </label>
+
+    <div class="modal" tabindex="-1" role="dialog" aria-hidden="true" ng-if="gameFinishedModal" ng-show="gameFinishedModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" ng-click="gameFinishedModal = false">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">You've won!</h4>
+                </div>
+                <div class="modal-body row">
+                    <h3 ng-bind="'Total time: ' + gameStats.totalTime" ng-attr-title="gameStats.totalTimeSeconds + ' seconds'"></h3>
+                    <h4 ng-show='gameStats.totalHintTime > 0'>
+                        Time lost by hints: <span ng-bind="'+' + gameStats.totalHintTime + ' seconds'" style='color: red'></span>
+                    </h4>
+
+                    <h4 ng-show='twoPlayers'>
+                        Player <b ng-bind="playerWon"></b> won!<br/><br/>
+                        player 1: {{playerPoints[0]}} points<br/>
+                        player 2: {{playerPoints[1]}} points
+                    </h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" aria-hidden="true" ng-show="showSets" ng-click="showSets = false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Sets</h4>
+                </div>
+                <div class="modal-body row">
+                    <table class="table table-responsive">
+                        <thead>
+                        <td>#</td>
+                        <td>on</td>
+                        <td>time per set</td>
+                        <td>set</td>
+                        <td>hint time</td>
+                        <td ng-show="twoPlayers">player #</td>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="set in sets" class="sets">
+                            <td ng-bind="::set.setID"></td>
+                            <td ng-bind="::set.onHuman" ng-attr-title="set.on + 's'"></td>
+                            <td ng-bind="::set.perSet + 's'"></td>
+                            <td ng-repeat="c in set.cards" class="col-sm-4 col-lg-4"
+                                ng-attr-class="card small card-number-{{::c.card[0]}} card-colour-{{::c.card[1]}}
+                                     card-shape-{{::c.card[2]}} card-filling-{{c.card[3]}} {{c.selected ? 'selected' : ''}}">
+                                <ul ng-attr-class="card-object-box card-amount-{{c.card[0]+1}}" style="list-style-type: none">
+                                    <li ng-if="c.card[0] != 1" class="card-object center-object pull-left"></li>
+                                    <li ng-if="c.card[0] > 0" class="card-object top-object pull-left"></li>
+                                    <li ng-if="c.card[0] > 0" class="card-object bottom-object pull-left"></li>
+                                </ul>
+                                <span class="hint small" ng-show="c.hint">*</span>
+                            </td>
+                            <td ng-bind="'+' + set.hintTime + 's'" ng-attr-style="color: {{set.hintTime ? 'red' : 'green'}}"></td>
+                            <td ng-show="twoPlayers" ng-bind="set.player"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input id="hiddenInput" style="position:fixed;top:-1000px;" ng-keydown="keyboardShortcut($event)" autofocus/>
+
+    <script src="angular.js"></script>
+    <!--<script src="angular-timer-bower.js"></script>-->
+    <!--<script src="angular-timer-all.min.js"></script>-->
+    <!--<script src="app.js"></script>-->
+    <script src="app.js"></script>
+    <script src="cards.js"></script>
+    <script src="helper.js"></script>
+    <!--<script src="libs/mousewheel.js"></script>-->
+    <script src="cookies/cookies.js"></script>
+    <script src="cookies/cookieStore.js"></script>
+    <script src="cookies/cookieWriter.js"></script>
+</body>
